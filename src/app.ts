@@ -6,7 +6,7 @@ import express from 'express';
 import plaid from 'plaid';
 import moment from 'moment';
 import * as ynab from 'ynab';
-import { SaveTransactionWrapper, SaveTransaction } from 'ynab';
+import { SaveTransaction } from 'ynab';
 
 const app: express.Application = express();
 
@@ -46,10 +46,20 @@ app.get('/', (_, res) => {
         })
       });
 
-      ynabClient.transactions.createTransaction(ynabBudgetID, {transactions: transactionsForYNAB}).then((response) => {
-        res.json(response);
-      });
-    })
+      if (transactionsForYNAB.length > 0) {
+        ynabClient.transactions.createTransaction(ynabBudgetID, {transactions: transactionsForYNAB}).then((response) => {
+          res.json(response);
+        }).catch(error => {
+          console.log(error);
+          res.json(error);
+        });
+      } else {
+        res.json(tranactionsResponse.transactions);
+      }
+    }).catch(error => {
+      console.log(error);
+      res.json(error);
+    });
 });
 
 app.listen(3000, () => {
