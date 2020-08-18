@@ -6,10 +6,14 @@
     "node": "10.14.0"
   },
   "main": "build/app.js",
+  "bin": {
+    "import": "build/import.js"
+  },
   "scripts": {
     "test": "nyc mocha -r ts-node/register src/**/*.spec.ts",
     "lint": "eslint src/**/*.ts",
     "start": "node build/app.js",
+    "import": "node build/import.js",
     "build": "tsc",
     "postinstall": "npm run build"
   },

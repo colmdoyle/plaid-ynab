@@ -35,7 +35,7 @@ app.get('/', (_, res) => {
       account_ids: [plaidDefaultAccount]
     }).then(tranactionsResponse => {
       const transactionsForYNAB: SaveTransaction[] = [];
-
+            
       tranactionsResponse.transactions.forEach(transaction => {
         transactionsForYNAB.push({
           account_id: ynabDefaultAccount,
