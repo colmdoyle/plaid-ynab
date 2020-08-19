@@ -36,6 +36,9 @@ plaidClient.getTransactions(plaid_access_token, startDate, endDate, {
   console.log(`-----------------------`);
   const transactionsForYNAB: SaveTransaction[] = [];
   tranactionsResponse.transactions.forEach(transaction => {
+    if (transaction.pending) {
+      return;
+    }
     console.log(`${transaction.date} | ${transaction.name} | ${transaction.amount}`);
     transactionsForYNAB.push({
       account_id: ynabDefaultAccount,
