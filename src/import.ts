@@ -37,6 +37,7 @@ plaidClient.getTransactions(plaid_access_token, startDate, endDate, {
   const transactionsForYNAB: SaveTransaction[] = [];
   tranactionsResponse.transactions.forEach(transaction => {
     if (transaction.pending) {
+      console.log(`PENDING | ${transaction.date} | ${transaction.name} | ${transaction.amount}`);
       return;
     }
     console.log(`${transaction.date} | ${transaction.name} | ${transaction.amount}`);
@@ -51,7 +52,7 @@ plaidClient.getTransactions(plaid_access_token, startDate, endDate, {
   });
   console.log(`-----------------------`);
   if (transactionsForYNAB.length > 0) {
-    console.log(`Sending to YNAB...`);
+    console.log(`Sending ${transactionsForYNAB.length} transaction to YNAB...`);
     ynabClient.transactions.createTransaction(ynabBudgetID, { transactions: transactionsForYNAB }).then((response) => {
       console.log(`Added ${response.data.transaction_ids.length} new transactions`);
       if (response.data.duplicate_import_ids) {
