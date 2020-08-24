@@ -1,7 +1,7 @@
 {
-  "name": "aib-plaid-ynab",
+  "name": "plaid-ynab",
   "version": "1.0.0",
-  "description": "",
+  "description": "Import transactions via Plaid to YNAB",
   "engines": {
     "node": "10.14.0"
   },
