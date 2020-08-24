@@ -7,6 +7,7 @@ import plaid from 'plaid';
 import moment from 'moment';
 import * as ynab from 'ynab';
 import { SaveTransaction } from 'ynab';
+import axios from 'axios';
 
 const plaid_access_token = process.env.PLAID_ACCESS_TOKEN as string;
 const ynab_access_token = process.env.YNAB_ACCESS_TOKEN as string;
@@ -32,12 +33,22 @@ plaidClient.getTransactions(plaid_access_token, startDate, endDate, {
   offset: 0,
   account_ids: [plaidDefaultAccount]
 }).then(tranactionsResponse => {
+  let notificationPayload = {
+    plaidTransactionCount : "0",
+    plaidTransactionCountPending: "0",
+    ynabTransactionsSent: "0",
+    ynabNewTransactions: "0",
+    ynabIgnoredTransactions: "0",
+  };
   console.log(`Processing ${tranactionsResponse.transactions.length} transactions for ${tranactionsResponse.accounts[0].name}...`);
+  notificationPayload.plaidTransactionCount = tranactionsResponse.transactions.length.toString();
   console.log(`-----------------------`);
   const transactionsForYNAB: SaveTransaction[] = [];
+  let pendingTransactionCount = 0;
   tranactionsResponse.transactions.forEach(transaction => {
     if (transaction.pending) {
       console.log(`PENDING | ${transaction.date} | ${transaction.name} | ${transaction.amount}`);
+      pendingTransactionCount++;
       return;
     }
     console.log(`${transaction.date} | ${transaction.name} | ${transaction.amount}`);
@@ -50,16 +61,24 @@ plaidClient.getTransactions(plaid_access_token, startDate, endDate, {
       cleared: SaveTransaction.ClearedEnum.Cleared
     })
   });
+  notificationPayload.plaidTransactionCountPending = pendingTransactionCount.toString();
   console.log(`-----------------------`);
   if (transactionsForYNAB.length > 0) {
     console.log(`Sending ${transactionsForYNAB.length} transaction to YNAB...`);
+    notificationPayload.ynabTransactionsSent = transactionsForYNAB.length.toString();
     ynabClient.transactions.createTransaction(ynabBudgetID, { transactions: transactionsForYNAB }).then((response) => {
       console.log(`Added ${response.data.transaction_ids.length} new transactions`);
+      notificationPayload.ynabNewTransactions = response.data.transaction_ids.length.toString();
       if (response.data.duplicate_import_ids) {
         console.log(`Ignored ${response.data.duplicate_import_ids.length} duplicate transactions`);
+        notificationPayload.ynabIgnoredTransactions = response.data.duplicate_import_ids.length.toString();
+      }
+      if (process.env.SLACK_WEBHOOK_URL && (process.env.SLACK_WEBHOOK_URL as string).length > 0) {
+        axios.post(process.env.SLACK_WEBHOOK_URL, notificationPayload).catch(error => {
+          console.log(error);
+        });
       }
     }).catch(error => {
-      console.log(error);
       console.log(error);
     });
   } else {

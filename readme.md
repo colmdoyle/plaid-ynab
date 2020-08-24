@@ -20,3 +20,8 @@ Currently, the script only supports one YNAB account and one YNAB budget, but co
 
 ## Optional
 
+### Slack notifications
+
+If you're using a paid Slack plan, you can optionally send notifications when the script is run via [Workflow Builder webhooks](https://slack.com/intl/en-ie/help/articles/360041352714-Create-workflows-using-webhooks) by specifying a `SLACK_WEBHOOK_URL` environment variable.
+
+There is a `.workflow` file in the root directory which you can [import](https://slack.com/intl/en-ie/help/articles/360035209114-Automate-everyday-tasks-with-Workflow-Builder#import-a-file) directly into Workflow Builder to get started.

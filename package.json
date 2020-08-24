@@ -20,6 +20,7 @@
   "author": "Colm Doyle",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.20.0",
     "dotenv": "^8.2.0",
     "moment": "^2.27.0",
     "plaid": "^7.0.0",
