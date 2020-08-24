@@ -10,7 +10,7 @@ A small script to automatically pull transactions from your bank via [Plaid](htt
 - Your [Account ID](https://api.youneedabudget.com/v1#/Accounts/getAccounts)
 
 ### Plaid data
-- A [client ID and client secret](https://plaid.com/docs/quickstart/
+- A [client ID and client secret](https://plaid.com/docs/quickstart/)
 - An access token which you can get via their [sample app](https://github.com/plaid/quickstart)
 - The [list of account IDs](https://plaid.com/docs/quickstart/#auth-data) that you want to access
 
