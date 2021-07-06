@@ -55,7 +55,7 @@ plaidClient.getTransactions(plaid_access_token, startDate, endDate, {
     transactionsForYNAB.push({
       account_id: ynabDefaultAccount,
       date: transaction.date,
-      amount: -(transaction.amount! * 1000),
+      amount: -(Math.round(transaction.amount! * 1000)),
       memo: `Auto Import - ${transaction.name}`,
       import_id: crypto.createHash('md5').update(transaction.transaction_id).digest("hex"),
       cleared: SaveTransaction.ClearedEnum.Cleared
@@ -85,5 +85,10 @@ plaidClient.getTransactions(plaid_access_token, startDate, endDate, {
     console.log(tranactionsResponse.transactions);
   }
 }).catch(error => {
+  if (process.env.SLACK_ERROR_WEBHOOK_URL && (process.env.SLACK_ERROR_WEBHOOK_URL as string).length > 0) {
+    axios.post(process.env.SLACK_ERROR_WEBHOOK_URL, {error_message: JSON.stringify(error)}).catch(error => {
+      console.log(error);
+    });
+  }
   console.log(error);
 });
